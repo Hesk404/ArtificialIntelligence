@@ -13,7 +13,17 @@ namespace Lab1.Model
 
         public override string ToString()
         {
-            return $"{x}.{y}";
+            return $"[{x}.{y}]";
+        }
+
+
+        public static bool operator ==(Coordinate coord1, Coordinate coord2)
+        {
+            return (coord1.x == coord2.x && coord1.y == coord2.y);
+        }
+        public static bool operator !=(Coordinate coord1, Coordinate coord2)
+        {
+            return (coord1.x != coord2.x && coord1.y != coord2.y);
         }
     }
 }
