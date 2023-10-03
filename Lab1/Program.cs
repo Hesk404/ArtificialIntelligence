@@ -7,6 +7,7 @@ namespace Lab1
     {
         static void Main(string[] args)
         {
+            Console.WriteLine("Press enter to start");
             Console.ReadLine();
             string mapPath = "Resources/Map/map1.txt";
 
@@ -31,6 +32,9 @@ namespace Lab1
             int count = 0;
             State tmpState = new State { coordinate = new Coordinate { x = -1, y = -1}, direction = Direction.Forward };
             State nullState = new State { coordinate = new Coordinate { x = -1, y = -1 }, direction = Direction.Forward };
+
+            int maxO = 0;
+            int maxOandC = 0;
 
             while (true)
             {
@@ -64,18 +68,30 @@ namespace Lab1
                 if (openedStates.Count == 0)
                     break;
 
+                
 
                 tmpState = openedStates.Pop();
                 closedStates.Add(tmpState);
+
+                if(maxO < openedStates.Count() + 1)
+                    maxO = openedStates.Count() + 1;
+                if (maxOandC < openedStates.Count() + 1 + closedStates.Count())
+                    maxOandC = openedStates.Count() + 1 + closedStates.Count();
 
                 cube.state = tmpState;
 
 
                 //cube.Step(tmpState.coordinate);
                 neighbors = map.GetNeighbors(cube.state.coordinate);
-                Thread.Sleep(100);
+                //Thread.Sleep(100);
                 count++;
             }
+
+            Console.WriteLine("Press enter to replay");
+            Console.ReadLine();
+            Console.Clear();
+            Thread.Sleep(100);
+
 
             State finishCubeState = cube.state;
 
@@ -95,24 +111,15 @@ namespace Lab1
             while(finishWay.Count > 0)
             {
                 Print(map, cube, null);
+                PrintStatistic(maxO, maxOandC, count, openedStates.Count());
                 cube.state = finishWay.Pop();
                 Thread.Sleep(500);
             }
             Print(map, cube, null);
-            //bool exit = false;
-            //while(true)
-            //{
-            //    Print(map, cube, null);
-            //    cube.state = cube.state.parentState;
-            //    Thread.Sleep(500);
-            //    if (cube.state.ToString() == startState.ToString())
-            //    {
-            //        exit = true;
-            //        continue;
-            //    }
-            //    if (exit)
-            //        break;
-            //}
+            PrintStatistic(maxO, maxOandC, count, openedStates.Count());
+
+
+
         }
 
         static void Print(Map map, Cube cube, List<Coordinate?> neighbors)
@@ -132,6 +139,11 @@ namespace Lab1
             Console.WriteLine();
 
             map.PrintMap(cube.state);
+        }
+
+        static void PrintStatistic(int maxO, int maxOandC, int count, int finalO)
+        {
+            Console.WriteLine($"max O: {maxO}; max O and C: {maxOandC}; count of iterations: {count}; final count O: {finalO}");
         }
     }
 }
