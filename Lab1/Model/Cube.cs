@@ -120,5 +120,7 @@ namespace Lab1.Model
 
             return state.direction;
         }
+
+
     }
 }

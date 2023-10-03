@@ -25,5 +25,10 @@ namespace Lab1.Model
         {
             return (coord1.x != coord2.x || coord1.y != coord2.y);
         }
+
+        public bool IsNull()
+        {
+            return (x == 0 && y == null);
+        }
     }
 }

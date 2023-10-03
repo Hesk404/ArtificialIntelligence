@@ -12,8 +12,14 @@ namespace Lab1.Model
         public Coordinate coordinate { get; set; }
         public Direction direction { get; set; }
 
+        public State parentState { get; set; }
+
+
+
         public override string ToString()
         {
+            if (this.IsNull())
+                return null;
             string result = this.direction switch
             {
                 Direction.Forward => $"{this.coordinate.ToString()}; Forward",
@@ -30,6 +36,7 @@ namespace Lab1.Model
 
         public static bool operator !=(State state1, State state2) => (state1.coordinate != state2.coordinate) || (state1.direction == state2.direction);
 
+
         public override bool Equals(object? obj)
         {
             return this == (State)obj;
@@ -43,6 +50,11 @@ namespace Lab1.Model
                 result += (int)item;
             }
             return result;
+        }
+
+        public bool IsNull()
+        {
+            return (this.coordinate.IsNull() && direction == null && parentState.IsNull());
         }
     }
 }
