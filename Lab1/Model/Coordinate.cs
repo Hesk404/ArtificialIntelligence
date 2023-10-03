@@ -23,7 +23,7 @@ namespace Lab1.Model
         }
         public static bool operator !=(Coordinate coord1, Coordinate coord2)
         {
-            return (coord1.x != coord2.x && coord1.y != coord2.y);
+            return (coord1.x != coord2.x || coord1.y != coord2.y);
         }
     }
 }

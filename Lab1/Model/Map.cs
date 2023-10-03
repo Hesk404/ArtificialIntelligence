@@ -73,7 +73,11 @@ namespace Lab1.Model
             foreach(var cell in cells)
             {
                 if(state.coordinate == cell.cordinate)
+                {
+                    Console.ForegroundColor = ConsoleColor.Red;
                     Console.Write($"{state.direction.ToString()[0]}  ");
+                    Console.ForegroundColor = ConsoleColor.White;
+                }
                 else
                     Console.Write($"{(int)cell.floor}  ");
                 counter++;
@@ -89,6 +93,11 @@ namespace Lab1.Model
         public Coordinate GetStartPose()
         {
            return cells.Find(x => x.floor == Floor.Start).cordinate;
+        }
+
+        public Coordinate GetFinishPose()
+        {
+            return cells.Find(x => x.floor == Floor.Finish).cordinate;
         }
 
         private bool CanPass(Coordinate coordinate)
@@ -112,38 +121,29 @@ namespace Lab1.Model
         {
             List<Coordinate> neighbors = new List<Coordinate>();
 
-            foreach(var cell in cells)
+            foreach (var cell in cells)
             {
-                if(cell.cordinate.x == coordinate.x + 1 && cell.cordinate.y == coordinate.y)
+                if (cell.cordinate.x == coordinate.x + 1 && cell.cordinate.y == coordinate.y)
                 {
-                    var tmp = new Coordinate { x = coordinate.x + 1, y = coordinate.y };
+                    var tmp = new Coordinate { x = cell.cordinate.x, y = cell.cordinate.y };
                     if (CanPass(tmp))
                         neighbors.Add(tmp);
                 }
-            }
-            foreach (var cell in cells)
-            {
                 if (cell.cordinate.x == coordinate.x - 1 && cell.cordinate.y == coordinate.y)
                 {
-                    var tmp = new Coordinate { x = coordinate.x - 1, y = coordinate.y };
+                    var tmp = new Coordinate { x = cell.cordinate.x, y = cell.cordinate.y };
                     if (CanPass(tmp))
                         neighbors.Add(tmp);
                 }
-            }
-            foreach (var cell in cells)
-            {
                 if (cell.cordinate.x == coordinate.x && cell.cordinate.y == coordinate.y + 1)
                 {
-                    var tmp = new Coordinate { x = coordinate.x, y = coordinate.y + 1};
+                    var tmp = new Coordinate { x = cell.cordinate.x, y = cell.cordinate.y };
                     if (CanPass(tmp))
                         neighbors.Add(tmp);
                 }
-            }
-            foreach (var cell in cells)
-            {
                 if (cell.cordinate.x == coordinate.x && cell.cordinate.y == coordinate.y - 1)
                 {
-                    var tmp = new Coordinate { x = coordinate.x, y = coordinate.y - 1};
+                    var tmp = new Coordinate { x = cell.cordinate.x, y = cell.cordinate.y };
                     if (CanPass(tmp))
                         neighbors.Add(tmp);
                 }

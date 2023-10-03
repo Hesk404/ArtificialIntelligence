@@ -25,5 +25,24 @@ namespace Lab1.Model
             };
             return result;
         }
+
+        public static bool operator ==(State state1, State state2) => (state1.coordinate == state2.coordinate) && (state1.direction == state2.direction);
+
+        public static bool operator !=(State state1, State state2) => (state1.coordinate != state2.coordinate) || (state1.direction == state2.direction);
+
+        public override bool Equals(object? obj)
+        {
+            return this == (State)obj;
+        }
+
+        public override int GetHashCode()
+        {
+            int result = 0;
+            foreach(var item in this.ToString())
+            {
+                result += (int)item;
+            }
+            return result;
+        }
     }
 }
