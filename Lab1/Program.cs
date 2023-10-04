@@ -9,7 +9,7 @@ namespace Lab1
         {
             Console.WriteLine("Press enter to start");
             Console.ReadLine();
-            string mapPath = "Resources/Map/map1.txt";
+            string mapPath = "Resources/Map/map3.txt";
 
             Map map = new Map(mapPath);
 
@@ -33,8 +33,12 @@ namespace Lab1
             State tmpState = new State { coordinate = new Coordinate { x = -1, y = -1}, direction = Direction.Forward };
             State nullState = new State { coordinate = new Coordinate { x = -1, y = -1 }, direction = Direction.Forward };
 
+            List<State> finishStates = new List<State>();   
+
             int maxO = 0;
             int maxOandC = 0;
+
+            bool isHaveWay = false;
 
             while (true)
             {
@@ -45,6 +49,8 @@ namespace Lab1
 
                 if (tmpState == finishState)
                 {
+                    //finishStates.Add(tmpState);
+                    isHaveWay = true;
                     break;
                 }
                     
@@ -87,38 +93,46 @@ namespace Lab1
                 count++;
             }
 
-            Console.WriteLine("Press enter to replay");
-            Console.ReadLine();
-            Console.Clear();
-            Thread.Sleep(100);
 
-
-            State finishCubeState = cube.state;
-
-            State test = null;
-
-            Stack<State> finishWay = new Stack<State>();
-            finishWay.Push(cube.state);
-
-            while(cube.state.parentState.ToString() != startState.ToString())
+            if (isHaveWay)
             {
-                finishWay.Push(cube.state.parentState);
-                cube.state = cube.state.parentState;
-            }
-            finishWay.Push(startState);
+                Console.WriteLine("Press enter to replay");
+                Console.ReadLine();
+                Console.Clear();
+                Thread.Sleep(100);
 
-            cube.state = finishWay.Pop();
-            while(finishWay.Count > 0)
-            {
+
+                State finishCubeState = cube.state;
+
+                State test = null;
+
+                Stack<State> finishWay = new Stack<State>();
+                finishWay.Push(cube.state);
+
+                while (cube.state.parentState.ToString() != startState.ToString())
+                {
+                    finishWay.Push(cube.state.parentState);
+                    cube.state = cube.state.parentState;
+                }
+                finishWay.Push(startState);
+
+                cube.state = finishWay.Pop();
+                while (finishWay.Count > 0)
+                {
+                    Print(map, cube, null);
+                    PrintStatistic(maxO, maxOandC, count, openedStates.Count());
+                    cube.state = finishWay.Pop();
+                    Thread.Sleep(500);
+                }
                 Print(map, cube, null);
                 PrintStatistic(maxO, maxOandC, count, openedStates.Count());
-                cube.state = finishWay.Pop();
-                Thread.Sleep(500);
+
             }
-            Print(map, cube, null);
-            PrintStatistic(maxO, maxOandC, count, openedStates.Count());
-
-
+            else
+            {
+                Console.WriteLine($"There no way to {finishState.ToString()}");
+                PrintStatistic(maxO, maxOandC, count, openedStates.Count());
+            }
 
         }
 
