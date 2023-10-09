@@ -1,40 +1,35 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Lab1.Model
+﻿namespace Lab1.Model
 {
     public enum Direction { Forward = 1, Backward = 2, Left = 3, Right = 4, Up = 5, Down = 6 }
     public class State
     {
-        public Coordinate coordinate { get; set; }
-        public Direction direction { get; set; }
+        public Coordinate Coordinate { get; set; }
+        public Direction Direction { get; set; }
 
-        public State parentState { get; set; }
+        public State ParentState { get; set; }
 
+        public int Depth { get; set; }
 
 
         public override string ToString()
         {
             if (this.IsNull())
                 return null;
-            string result = this.direction switch
+            string result = this.Direction switch
             {
-                Direction.Forward => $"{this.coordinate.ToString()}; Forward",
-                Direction.Backward => $"{this.coordinate.ToString()}; Backward",
-                Direction.Left => $"{this.coordinate.ToString()}; Left",
-                Direction.Right => $"{this.coordinate.ToString()}; Right",
-                Direction.Up => $"{this.coordinate.ToString()}; Up",
-                Direction.Down => $"{this.coordinate.ToString()}; Down",
+                Direction.Forward => $"{this.Coordinate.ToString()}; Forward",
+                Direction.Backward => $"{this.Coordinate.ToString()}; Backward",
+                Direction.Left => $"{this.Coordinate.ToString()}; Left",
+                Direction.Right => $"{this.Coordinate.ToString()}; Right",
+                Direction.Up => $"{this.Coordinate.ToString()}; Up",
+                Direction.Down => $"{this.Coordinate.ToString()}; Down",
             };
             return result;
         }
 
-        public static bool operator ==(State state1, State state2) => (state1.coordinate == state2.coordinate) && (state1.direction == state2.direction);
+        public static bool operator ==(State state1, State state2) => (state1.Coordinate == state2.Coordinate) && (state1.Direction == state2.Direction);
 
-        public static bool operator !=(State state1, State state2) => (state1.coordinate != state2.coordinate) || (state1.direction == state2.direction);
+        public static bool operator !=(State state1, State state2) => (state1.Coordinate != state2.Coordinate) || (state1.Direction == state2.Direction);
 
 
         public override bool Equals(object? obj)
@@ -54,7 +49,7 @@ namespace Lab1.Model
 
         public bool IsNull()
         {
-            return (this.coordinate.IsNull() && direction == null && parentState.IsNull());
+            return (this.Coordinate.IsNull() && Direction == null && ParentState.IsNull());
         }
     }
 }

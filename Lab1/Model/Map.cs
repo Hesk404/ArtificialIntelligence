@@ -72,10 +72,10 @@ namespace Lab1.Model
             int counter = 0;
             foreach(var cell in cells)
             {
-                if(state.coordinate == cell.cordinate)
+                if(state.Coordinate == cell.cordinate)
                 {
                     Console.ForegroundColor = ConsoleColor.Red;
-                    Console.Write($"{state.direction.ToString()[0]}  ");
+                    Console.Write($"{state.Direction.ToString()[0]}  ");
                     Console.ForegroundColor = ConsoleColor.White;
                 }
                 else

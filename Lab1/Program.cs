@@ -5,58 +5,124 @@ namespace Lab1
 {
     public class Program
     {
+        private static Map map;
+        private static State startState;
+        private static State finishState;
         static void Main(string[] args)
         {
             Console.WriteLine("Press enter to start");
             Console.ReadLine();
-            string mapPath = "Resources/Map/map3.txt";
+            string mapPath = "Resources/Map/map1.txt";
 
-            Map map = new Map(mapPath);
+            map = new Map(mapPath);
 
-            State startState = new State { coordinate = map.GetStartPose(), direction = Direction.Left};
-            State finishState = new State { coordinate = map.GetFinishPose(), direction = Direction.Down };
+            startState = new State { Coordinate = map.GetStartPose(), Direction = Direction.Left};
+            finishState = new State { Coordinate = map.GetFinishPose(), Direction = Direction.Down };
+
             Cube cube = new Cube(startState);
-            
-            HashSet<State> closedStates = new HashSet<State>();
-            Stack<State> openedStates = new Stack<State>();
-            
-            Random rnd = new Random();
 
-            var neighbors = map.GetNeighbors(cube.state.coordinate);
+            Statistic finder = new Statistic();
 
             Console.Clear();
 
-            openedStates.Push(new State { coordinate = cube.state.coordinate, direction = cube.state.direction});
+            int maxi = 0;
+
+            for (int i = 0; i < int.MaxValue; i++)
+            {
+                maxi = i;
+                cube = new Cube(startState);
+                finder = FindWay(cube, i);
+                if (finder.IsHaveWay)
+                    break;
+            }
+
+
+
+            if (finder.IsHaveWay)
+            {
+                Console.WriteLine("Press enter to replay");
+                Console.ReadLine();
+                Console.Clear();
+                Thread.Sleep(100);
+
+
+                State finishCubeState = cube.State;
+
+                State test = null;
+
+                Stack<State> finishWay = new Stack<State>();
+                finishWay.Push(cube.State);
+
+                while (cube.State.ParentState.ToString() != startState.ToString())
+                {
+                    finishWay.Push(cube.State.ParentState);
+                    cube.State = cube.State.ParentState;
+                }
+                finishWay.Push(startState);
+
+                cube.State = finishWay.Pop();
+                while (finishWay.Count > 0)
+                {
+                    Print(map, cube, null);
+                    PrintStatistic(finder.MaxO, finder.MaxOAndC, finder.Count, finder.LastO);
+                    cube.State = finishWay.Pop();
+                    Thread.Sleep(500);
+                }
+                Print(map, cube, null);
+                PrintStatistic(finder.MaxO, finder.MaxOAndC, finder.Count, finder.LastO);
+
+            }
+            else
+            {
+                Console.WriteLine($"There no way to {finishState.ToString()}");
+                PrintStatistic(finder.MaxO, finder.MaxOAndC, finder.Count, finder.LastO);
+            }
+
+        }
+
+        static Statistic FindWay(Cube cube, int maxDepth)
+        {
+            cube.State.Depth = 0;
+
+            HashSet<State> closedStates = new HashSet<State>();
+            Stack<State> openedStates = new Stack<State>();
+
+            Statistic stat = new Statistic();
+
+            var neighbors = map.GetNeighbors(cube.State.Coordinate);
+
+            
+
+            openedStates.Push(new State { Coordinate = cube.State.Coordinate, Direction = cube.State.Direction });
             //closedStates.Add(new State { coordinate = cube.state.coordinate, direction = cube.state.direction });
 
-            int count = 0;
-            State tmpState = new State { coordinate = new Coordinate { x = -1, y = -1}, direction = Direction.Forward };
-            State nullState = new State { coordinate = new Coordinate { x = -1, y = -1 }, direction = Direction.Forward };
 
-            List<State> finishStates = new List<State>();   
+            State tmpState = new State { Coordinate = new Coordinate { x = -1, y = -1 }, Direction = Direction.Forward };
+            //State nullState = new State { coordinate = new Coordinate { x = -1, y = -1 }, direction = Direction.Forward };
 
-            int maxO = 0;
-            int maxOandC = 0;
+            List<State> finishStates = new List<State>();
 
-            bool isHaveWay = false;
 
-            while (true)
+
+            
+
+            while (cube.State.Depth <= maxDepth)
             {
                 Print(map, cube, neighbors);
 
-                if (count == 0)
-                    cube.state.parentState = startState;
+                if (stat.Count == 0)
+                    cube.State.ParentState = startState;
 
                 if (tmpState == finishState)
                 {
                     //finishStates.Add(tmpState);
-                    isHaveWay = true;
+                    stat.IsHaveWay = true;
                     break;
                 }
-                    
 
 
-                if (count == 0)
+
+                if (stat.Count == 0)
                 {
                     tmpState = openedStates.Pop();
                     closedStates.Add(tmpState);
@@ -64,7 +130,7 @@ namespace Lab1
 
                 foreach (var neighbor in neighbors)
                 {
-                    var neighborState = new State { coordinate = neighbor, direction = cube.DirectionAfterMove(neighbor), parentState = cube.state};
+                    var neighborState = new State { Coordinate = neighbor, Direction = cube.DirectionAfterMove(neighbor), ParentState = cube.State, Depth = cube.State.Depth + 1 };
                     if (!openedStates.Contains(neighborState) && !closedStates.Contains(neighborState))
                     {
                         openedStates.Push(neighborState);
@@ -74,72 +140,34 @@ namespace Lab1
                 if (openedStates.Count == 0)
                     break;
 
-                
+
 
                 tmpState = openedStates.Pop();
                 closedStates.Add(tmpState);
 
-                if(maxO < openedStates.Count() + 1)
-                    maxO = openedStates.Count() + 1;
-                if (maxOandC < openedStates.Count() + 1 + closedStates.Count())
-                    maxOandC = openedStates.Count() + 1 + closedStates.Count();
+                if (stat.MaxO < openedStates.Count() + 1)
+                    stat.MaxO = openedStates.Count() + 1;
+                if (stat.MaxOAndC < openedStates.Count() + 1 + closedStates.Count())
+                    stat.MaxOAndC = openedStates.Count() + 1 + closedStates.Count();
 
-                cube.state = tmpState;
+                cube.State = tmpState;
 
 
                 //cube.Step(tmpState.coordinate);
-                neighbors = map.GetNeighbors(cube.state.coordinate);
+                neighbors = map.GetNeighbors(cube.State.Coordinate);
                 //Thread.Sleep(100);
-                count++;
+                stat.Count++;
             }
 
+            stat.LastO = openedStates.Count();
 
-            if (isHaveWay)
-            {
-                Console.WriteLine("Press enter to replay");
-                Console.ReadLine();
-                Console.Clear();
-                Thread.Sleep(100);
-
-
-                State finishCubeState = cube.state;
-
-                State test = null;
-
-                Stack<State> finishWay = new Stack<State>();
-                finishWay.Push(cube.state);
-
-                while (cube.state.parentState.ToString() != startState.ToString())
-                {
-                    finishWay.Push(cube.state.parentState);
-                    cube.state = cube.state.parentState;
-                }
-                finishWay.Push(startState);
-
-                cube.state = finishWay.Pop();
-                while (finishWay.Count > 0)
-                {
-                    Print(map, cube, null);
-                    PrintStatistic(maxO, maxOandC, count, openedStates.Count());
-                    cube.state = finishWay.Pop();
-                    Thread.Sleep(500);
-                }
-                Print(map, cube, null);
-                PrintStatistic(maxO, maxOandC, count, openedStates.Count());
-
-            }
-            else
-            {
-                Console.WriteLine($"There no way to {finishState.ToString()}");
-                PrintStatistic(maxO, maxOandC, count, openedStates.Count());
-            }
-
+            return stat;
         }
 
         static void Print(Map map, Cube cube, List<Coordinate?> neighbors)
         {
             Console.SetCursorPosition(0, 0);
-            Console.WriteLine($"Cube state: {cube.state.ToString()}         ");
+            Console.WriteLine($"Cube state: {cube.State.ToString()}         ");
             Console.WriteLine(new string(' ', Console.WindowWidth));
             Console.SetCursorPosition(0, 1);
             if(neighbors != null)
@@ -152,7 +180,7 @@ namespace Lab1
 
             Console.WriteLine();
 
-            map.PrintMap(cube.state);
+            map.PrintMap(cube.State);
         }
 
         static void PrintStatistic(int maxO, int maxOandC, int count, int finalO)
