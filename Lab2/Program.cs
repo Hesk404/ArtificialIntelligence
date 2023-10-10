@@ -23,13 +23,19 @@ namespace Lab1
 
             Statistic finder = new Statistic();
 
+            //Console.Clear();
+
+            //finder = FindWay(cube, int.MaxValue);
+
+            //Console.ReadLine();
+
             Console.Clear();
 
-            int maxi = 0;
+            int maxI = 1;
 
             for (int i = 0; i < int.MaxValue; i++)
             {
-                maxi = i;
+                maxI++;
                 cube = new Cube(startState);
                 finder = FindWay(cube, i);
                 if (finder.IsHaveWay)
@@ -64,18 +70,18 @@ namespace Lab1
                 while (finishWay.Count > 0)
                 {
                     Print(map, cube, null);
-                    PrintStatistic(finder.MaxO, finder.MaxOAndC, finder.Count, finder.LastO);
+                    PrintStatistic(finder.MaxO, finder.MaxOAndC, finder.Count, finder.LastO, maxI);
                     cube.State = finishWay.Pop();
                     Thread.Sleep(500);
                 }
                 Print(map, cube, null);
-                PrintStatistic(finder.MaxO, finder.MaxOAndC, finder.Count, finder.LastO);
+                PrintStatistic(finder.MaxO, finder.MaxOAndC, finder.Count, finder.LastO, maxI);
 
             }
             else
             {
                 Console.WriteLine($"There no way to {finishState.ToString()}");
-                PrintStatistic(finder.MaxO, finder.MaxOAndC, finder.Count, finder.LastO);
+                PrintStatistic(finder.MaxO, finder.MaxOAndC, finder.Count, finder.LastO, maxI);
             }
 
         }
@@ -106,7 +112,7 @@ namespace Lab1
 
             
 
-            while (cube.State.Depth <= maxDepth)
+            while (openedStates.Count >= 0)
             {
                 Print(map, cube, neighbors);
 
@@ -131,9 +137,12 @@ namespace Lab1
                 foreach (var neighbor in neighbors)
                 {
                     var neighborState = new State { Coordinate = neighbor, Direction = cube.DirectionAfterMove(neighbor), ParentState = cube.State, Depth = cube.State.Depth + 1 };
-                    if (!openedStates.Contains(neighborState) && !closedStates.Contains(neighborState))
+                    if (cube.State.Depth <= maxDepth)
                     {
-                        openedStates.Push(neighborState);
+                        if (!openedStates.Contains(neighborState) && !closedStates.Contains(neighborState))
+                        {
+                            openedStates.Push(neighborState);
+                        }
                     }
                 }
 
@@ -155,7 +164,7 @@ namespace Lab1
 
                 //cube.Step(tmpState.coordinate);
                 neighbors = map.GetNeighbors(cube.State.Coordinate);
-                //Thread.Sleep(100);
+                //Thread.Sleep(300);
                 stat.Count++;
             }
 
@@ -183,9 +192,9 @@ namespace Lab1
             map.PrintMap(cube.State);
         }
 
-        static void PrintStatistic(int maxO, int maxOandC, int count, int finalO)
+        static void PrintStatistic(int maxO, int maxOandC, int count, int finalO, int maxI)
         {
-            Console.WriteLine($"max O: {maxO}; max O and C: {maxOandC}; count of iterations: {count}; final count O: {finalO}");
+            Console.WriteLine($"max O: {maxO}; max O and C: {maxOandC}; count of iterations: {count}; final count O: {finalO}; count of iterations to depth: {maxI}");
         }
     }
 }
