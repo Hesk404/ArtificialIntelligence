@@ -151,5 +151,8 @@ namespace Lab1.Model
 
             return neighbors;
         }
+
+        public int GetMapSize() => _mapColumnsCount * _mapRowsCount;
+
     }
 }

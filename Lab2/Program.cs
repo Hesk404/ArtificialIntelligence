@@ -40,6 +40,8 @@ namespace Lab1
                 finder = FindWay(cube, i);
                 if (finder.IsHaveWay)
                     break;
+                if (i == map.GetMapSize())
+                    break;
             }
 
 
@@ -149,6 +151,8 @@ namespace Lab1
                 if (openedStates.Count == 0)
                     break;
 
+                if (openedStates.Count == 0 && cube.State.Depth >= maxDepth)
+                    break;
 
 
                 tmpState = openedStates.Pop();
@@ -158,6 +162,8 @@ namespace Lab1
                     stat.MaxO = openedStates.Count() + 1;
                 if (stat.MaxOAndC < openedStates.Count() + 1 + closedStates.Count())
                     stat.MaxOAndC = openedStates.Count() + 1 + closedStates.Count();
+
+ 
 
                 cube.State = tmpState;
 
