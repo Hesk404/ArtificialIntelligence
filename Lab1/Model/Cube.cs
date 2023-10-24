@@ -8,11 +8,11 @@ namespace Lab1.Model
 {
     public class Cube
     {
-        public State state;
+        public State State;
 
         public Cube(State state) 
         {
-            this.state = state;
+            this.State = state;
         }
 
         public void Step(Coordinate coord)
@@ -23,102 +23,102 @@ namespace Lab1.Model
             //if (coord.x >= state.coordinate.x + 2 || coord.x <= state.coordinate.x - 2 || coord.y >= state.coordinate.y + 2 || coord.y <= state.coordinate.y - 2)
             //    return;
 
-            if(coord.x < state.coordinate.x && coord.y == state.coordinate.y)
+            if(coord.x < State.Coordinate.x && coord.y == State.Coordinate.y)
             {
-                state.direction = state.direction switch
+                State.Direction = State.Direction switch
                 {
                     Direction.Up => Direction.Left,
                     Direction.Left => Direction.Down,
                     Direction.Down => Direction.Right,
                     Direction.Right => Direction.Up,
-                    _ => state.direction
+                    _ => State.Direction
                 };
             }
-            else if(coord.x > state.coordinate.x && coord.y == state.coordinate.y)
+            else if(coord.x > State.Coordinate.x && coord.y == State.Coordinate.y)
             {
-                state.direction = state.direction switch
+                State.Direction = State.Direction switch
                 {
                     Direction.Up => Direction.Right,
                     Direction.Right => Direction.Down,
                     Direction.Down => Direction.Left,
                     Direction.Left => Direction.Up,
-                    _ => state.direction
+                    _ => State.Direction
                 };
             }
-            else if(coord.x == state.coordinate.x && coord.y < state.coordinate.y)
+            else if(coord.x == State.Coordinate.x && coord.y < State.Coordinate.y)
             {
-                state.direction = state.direction switch
+                State.Direction = State.Direction switch
                 {
                     Direction.Up => Direction.Forward,
                     Direction.Forward => Direction.Down,
                     Direction.Down => Direction.Backward,
                     Direction.Backward => Direction.Up,
-                    _ => state.direction
+                    _ => State.Direction
                 };
             }
-            else if(coord.x == state.coordinate.x && coord.y > state.coordinate.y)
+            else if(coord.x == State.Coordinate.x && coord.y > State.Coordinate.y)
             {
-                state.direction = state.direction switch
+                State.Direction = State.Direction switch
                 {
                     Direction.Up => Direction.Backward,
                     Direction.Backward => Direction.Down,
                     Direction.Down => Direction.Forward,
                     Direction.Forward => Direction.Up,
-                    _ => state.direction
+                    _ => State.Direction
                 };
             }
 
-            state.coordinate = coord;
+            State.Coordinate = coord;
         }
 
         public Direction DirectionAfterMove(Coordinate coord)
         {
-            if (coord.x < state.coordinate.x && coord.y == state.coordinate.y)
+            if (coord.x < State.Coordinate.x && coord.y == State.Coordinate.y)
             {
-                return state.direction switch
+                return State.Direction switch
                 {
                     Direction.Up => Direction.Left,
                     Direction.Left => Direction.Down,
                     Direction.Down => Direction.Right,
                     Direction.Right => Direction.Up,
-                    _ => state.direction
+                    _ => State.Direction
                 };
             }
-            else if (coord.x > state.coordinate.x && coord.y == state.coordinate.y)
+            else if (coord.x > State.Coordinate.x && coord.y == State.Coordinate.y)
             {
-                return state.direction switch
+                return State.Direction switch
                 {
                     Direction.Up => Direction.Right,
                     Direction.Right => Direction.Down,
                     Direction.Down => Direction.Left,
                     Direction.Left => Direction.Up,
-                    _ => state.direction
+                    _ => State.Direction
                 };
             }
-            else if (coord.x == state.coordinate.x && coord.y < state.coordinate.y)
+            else if (coord.x == State.Coordinate.x && coord.y < State.Coordinate.y)
             {
-                return state.direction switch
+                return State.Direction switch
                 {
                     Direction.Up => Direction.Forward,
                     Direction.Forward => Direction.Down,
                     Direction.Down => Direction.Backward,
                     Direction.Backward => Direction.Up,
-                    _ => state.direction
+                    _ => State.Direction
                 };
             }
-            else if (coord.x == state.coordinate.x && coord.y > state.coordinate.y)
+            else if (coord.x == State.Coordinate.x && coord.y > State.Coordinate.y)
             {
-                return state.direction switch
+                return State.Direction switch
                 {
                     Direction.Up => Direction.Backward,
                     Direction.Backward => Direction.Down,
                     Direction.Down => Direction.Forward,
                     Direction.Forward => Direction.Up,
-                    _ => state.direction
+                    _ => State.Direction
                 };
             }
 
-            return state.direction;
+            return State.Direction;
         }
 
 
