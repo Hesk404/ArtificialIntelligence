@@ -7,14 +7,25 @@ using System.Threading.Tasks;
 namespace Lab1.Model
 {
     public enum Direction { Forward = 1, Backward = 2, Left = 3, Right = 4, Up = 5, Down = 6 }
-    public class State
+    public class State : ICloneable
     {
         public Coordinate Coordinate { get; set; }
         public Direction Direction { get; set; }
 
-        public State ParentState { get; set; }
+        public State? ParentState { get; set; }
 
         public int Depth { get; set; }
+
+
+        public State() { }
+
+        public State(State state)
+        {
+            Coordinate = new Coordinate { x = state.Coordinate.x, y = state.Coordinate.y };
+            Direction = state.Direction;
+            ParentState = (state.ParentState is null || state.ParentState == state) ? null : new(state.ParentState);
+            Depth = state.Depth;
+        }
 
         public override string ToString()
         {
@@ -55,6 +66,11 @@ namespace Lab1.Model
         public bool IsNull()
         {
             return (this.Coordinate.IsNull() && Direction == null && ParentState.IsNull());
+        }
+
+        public object Clone()
+        {
+            return new State(this);
         }
     }
 }

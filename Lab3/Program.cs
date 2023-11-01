@@ -3,7 +3,7 @@ using System.Diagnostics.Metrics;
 
 namespace Lab1
 {
-    public enum Heuristic { Default = 1, Manhattan}
+    public enum Heuristic { Default = 1, Manhattan, ManhattanExtended}
 
     public class Program
     {
@@ -20,11 +20,11 @@ namespace Lab1
                 bool exit = false;
                 int swit = -1;
 
-                string emptyStr = new string(' ', 3);
+                string emptyStr = new string(' ', 4);
 
                 while (true)
                 {
-                    Console.WriteLine($"Choose option:\r\n{emptyStr}0 - exit;\r\n{emptyStr}1 - Default(g(x));\r\n{emptyStr}2 - Manhattan(g(x) + h1(x))");
+                    Console.WriteLine($"Choose option:\r\n{emptyStr}0 - exit;\r\n{emptyStr}1 - Default(g(x));\r\n{emptyStr}2 - Manhattan(g(x) + h1(x))\r\n{emptyStr}3 - Mahattan Extended(g(x) + h2(x))");
                     try
                     {
                         swit = Int32.Parse(Console.ReadLine());
@@ -36,6 +36,7 @@ namespace Lab1
                         case 0: return; break;
                         case 1: heuristic = Heuristic.Default; exit = true; break;
                         case 2: heuristic = Heuristic.Manhattan; exit = true; break;
+                        case 3: heuristic = Heuristic.ManhattanExtended; exit = true; break;
                         default: Console.WriteLine("Type correct number!"); break;
                     }
                     if (exit)
@@ -49,7 +50,7 @@ namespace Lab1
                 Console.ReadLine();
                 Console.Clear();
 
-                string mapPath = "Resources/Map/map1.txt";
+                string mapPath = "Resources/Map/map2.txt";
 
                 map = new Map(mapPath);
 
@@ -127,7 +128,7 @@ namespace Lab1
             var neighbors = map.GetNeighbors(cube.State.Coordinate);
 
             //openedStates.Push(new State { Coordinate = cube.State.Coordinate, Direction = cube.State.Direction });
-            openedStates.Enqueue(new State { Coordinate = cube.State.Coordinate, Direction = cube.State.Direction }, HeuristicFunction(cube.State));
+            openedStates.Enqueue(new State { Coordinate = cube.State.Coordinate, Direction = cube.State.Direction }, HeuristicFunction(cube));
             //closedStates.Add(new State { coordinate = cube.state.coordinate, direction = cube.state.direction });
 
             State tmpState = new State { Coordinate = new Coordinate { x = -1, y = -1 }, Direction = Direction.Forward };
@@ -165,7 +166,7 @@ namespace Lab1
                         if (!openedStates.UnorderedItems.Select(x => x.ToString() == neighbor.ToString()).FirstOrDefault() && !closedStates.Contains(neighborState))
                         {
                             //openedStates.Push(neighborState);
-                            openedStates.Enqueue(neighborState, HeuristicFunction(cube.State));
+                            openedStates.Enqueue(neighborState, HeuristicFunction(cube));
                         }
                     }
                 }
@@ -199,7 +200,7 @@ namespace Lab1
             return stat;
         }
 
-        static public float HeuristicFunction(State state)
+        static public float HeuristicFunction(Cube cube)
         {
             float result = 0;
             float wayLength = 0;
@@ -207,13 +208,39 @@ namespace Lab1
             {
                 case Heuristic.Default:
                     {
-                        result = state.Depth;
+                        result = cube.State.Depth;
                     }
                     break;
                 case Heuristic.Manhattan:
                     {
-                        wayLength = Math.Abs(state.Coordinate.x - finishState.Coordinate.x) + Math.Abs(state.Coordinate.y - finishState.Coordinate.y);
-                        result = state.Depth + wayLength;
+                        wayLength = Math.Abs(cube.State.Coordinate.x - finishState.Coordinate.x) + Math.Abs(cube.State.Coordinate.y - finishState.Coordinate.y);
+                        result = cube.State.Depth + wayLength;
+                    }
+                    break;
+                case Heuristic.ManhattanExtended:
+                    {
+                        var tmpCube = new Cube(new State(cube.State));
+
+                        while (tmpCube.State.Coordinate.x > finishState.Coordinate.x)
+                            tmpCube.Step(new Coordinate { x = tmpCube.State.Coordinate.x - 1, y = tmpCube.State.Coordinate.y });
+                        while (tmpCube.State.Coordinate.x < finishState.Coordinate.x)
+                            tmpCube.Step(new Coordinate { x = tmpCube.State.Coordinate.x + 1, y = tmpCube.State.Coordinate.y });
+                        while (tmpCube.State.Coordinate.y > finishState.Coordinate.y)
+                            tmpCube.Step(new Coordinate { x = tmpCube.State.Coordinate.x, y = tmpCube.State.Coordinate.y - 1 });
+                        while (tmpCube.State.Coordinate.y < finishState.Coordinate.y)
+                            tmpCube.Step(new Coordinate { x = tmpCube.State.Coordinate.x, y = tmpCube.State.Coordinate.y + 1 });
+
+                        wayLength = Math.Abs(cube.State.Coordinate.x - finishState.Coordinate.x) + Math.Abs(cube.State.Coordinate.y - finishState.Coordinate.y);
+                        wayLength = tmpCube.State.Direction switch
+                        {
+                            Direction.Right => wayLength + 1,
+                            Direction.Left => wayLength + 1,
+                            Direction.Up => wayLength + 2,
+                            Direction.Down => wayLength + 0,
+                            Direction.Forward => wayLength + 1,
+                            Direction.Backward => wayLength + 1
+                        };
+                        result = cube.State.Depth + wayLength;
                     }
                     break;
             }
