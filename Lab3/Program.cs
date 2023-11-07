@@ -1,4 +1,5 @@
 ﻿using Lab1.Model;
+using Lab3.Model;
 using System.Diagnostics.Metrics;
 
 namespace Lab1
@@ -121,14 +122,19 @@ namespace Lab1
             HashSet<State> closedStates = new HashSet<State>();
             //Stack<State> openedStates = new Stack<State>();
 
-            PriorityQueue<State, float> openedStates = new PriorityQueue<State, float>();
+            //PriorityQueue<State, float> openedStates = new PriorityQueue<State, float>();
+
+            List<KeyValue> openedStates = new List<KeyValue>();
+
 
             Statistic stat = new Statistic();
 
             var neighbors = map.GetNeighbors(cube.State.Coordinate);
 
             //openedStates.Push(new State { Coordinate = cube.State.Coordinate, Direction = cube.State.Direction });
-            openedStates.Enqueue(new State { Coordinate = cube.State.Coordinate, Direction = cube.State.Direction }, HeuristicFunction(cube));
+            //openedStates.Enqueue(new State { Coordinate = cube.State.Coordinate, Direction = cube.State.Direction }, HeuristicFunction(cube));
+            openedStates.Add(new KeyValue { Key = HeuristicFunction(cube), Value = new State { Coordinate = cube.State.Coordinate, Direction = cube.State.Direction } });
+            openedStates = openedStates.OrderBy(x => x.Key).ToList();
             //closedStates.Add(new State { coordinate = cube.state.coordinate, direction = cube.state.direction });
 
             State tmpState = new State { Coordinate = new Coordinate { x = -1, y = -1 }, Direction = Direction.Forward };
@@ -153,9 +159,14 @@ namespace Lab1
                 if (stat.Count == 0)
                 {
                     //tmpState = openedStates.Pop();
-                    tmpState = openedStates.Dequeue();
+                    //tmpState = openedStates.Dequeue();
+                    tmpState = openedStates.First().Value;
+                    openedStates.Remove(openedStates.First());
+                    openedStates = openedStates.OrderBy(x => x.Key).ToList();
                     closedStates.Add(tmpState);
                 }
+
+                
 
                 foreach (var neighbor in neighbors)
                 {
@@ -163,13 +174,30 @@ namespace Lab1
                     if (cube.State.Depth <= maxDepth)
                     {
                         //if (!openedStates.Contains(neighborState) && !closedStates.Contains(neighborState))
-                        if (!openedStates.UnorderedItems.Select(x => x.ToString() == neighbor.ToString()).FirstOrDefault() && !closedStates.Contains(neighborState))
+                        //if (!openedStates.UnorderedItems.Select(x => x.ToString() == neighbor.ToString()).FirstOrDefault() && !closedStates.Contains(neighborState))
+                        var tmp = openedStates.Where(x => (x.Key >= 0) && (x.Key <= openedStates.Max(x => x.Key)) && (x.Key != HeuristicFunction(cube)) && (x.Value.ToString() == neighborState.ToString())).FirstOrDefault();
+                        if (tmp != null)
+                        {
+                            if (tmp.Key > HeuristicFunction(cube))
+                            {
+                                tmp.Key = HeuristicFunction(cube);
+                                openedStates.OrderBy(x => x.Key);
+                                continue;
+                            }
+                        }
+                        
+
+                        if (!openedStates.Contains(new KeyValue { Key = HeuristicFunction(cube), Value = neighborState }) && !closedStates.Contains(neighborState))
                         {
                             //openedStates.Push(neighborState);
-                            openedStates.Enqueue(neighborState, HeuristicFunction(cube));
+                            //openedStates.Enqueue(neighborState, HeuristicFunction(cube));
+                            openedStates.Add(new KeyValue { Key = HeuristicFunction(cube), Value = neighborState });
+                            openedStates = openedStates.OrderBy(x => x.Key).ToList();
                         }
                     }
                 }
+
+                
 
                 if (openedStates.Count == 0)
                     break;
@@ -179,7 +207,10 @@ namespace Lab1
 
 
                 //tmpState = openedStates.Pop();
-                tmpState = openedStates.Dequeue();
+                //tmpState = openedStates.Dequeue();
+                tmpState = openedStates.First().Value;
+                openedStates.Remove(openedStates.First());
+                openedStates = openedStates.OrderBy(x => x.Key).ToList();
                 closedStates.Add(tmpState);
 
                 if (stat.MaxO < openedStates.Count + 1)
