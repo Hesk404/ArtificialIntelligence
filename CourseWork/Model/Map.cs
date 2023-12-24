@@ -1,4 +1,6 @@
 ﻿
+using System.Reflection.PortableExecutable;
+
 namespace Lab1.Model
 {
     public enum Floor { Empty = 0, Solid = 1, Start = 2, Finish = 3}
@@ -78,6 +80,18 @@ namespace Lab1.Model
                     Console.Write($"{state.Direction.ToString()[0]}  ");
                     Console.ForegroundColor = ConsoleColor.White;
                 }
+                else if(cell.floor == Floor.Start)
+                {
+                    Console.ForegroundColor = ConsoleColor.Green;
+                    Console.Write($"{(int)cell.floor}  ");
+                    Console.ForegroundColor = ConsoleColor.White;
+                }
+                else if(cell.floor == Floor.Finish)
+                {
+                    Console.ForegroundColor = ConsoleColor.Magenta;
+                    Console.Write($"{(int)cell.floor}  ");
+                    Console.ForegroundColor = ConsoleColor.White;
+                }
                 else
                     Console.Write($"{(int)cell.floor}  ");
                 counter++;
@@ -93,6 +107,14 @@ namespace Lab1.Model
         public Coordinate GetStartPose()
         {
            return cells.Find(x => x.floor == Floor.Start).cordinate;
+        }
+
+        public void SetStartPose(Coordinate coordinate)
+        {
+            var start = cells.Find(x => x.floor == Floor.Start);
+            start.floor = Floor.Solid;
+            var newStart = cells.Find(x => x.cordinate.x == coordinate.x && x.cordinate.y == coordinate.y);
+            newStart.floor = Floor.Start;
         }
 
         public Coordinate GetFinishPose()
@@ -153,5 +175,12 @@ namespace Lab1.Model
         }
 
         public int GetMapSize() => _mapColumnsCount * _mapRowsCount;
+
+        public Coordinate GetRandomCoordinate()
+        {
+            Random rnd = new Random(DateTime.Now.Millisecond);
+            var tmp =  cells.Where(x => x.floor != Floor.Empty && x.floor != Floor.Finish);
+            return tmp.ElementAt(rnd.Next(0, tmp.Count())).cordinate;
+        }
     }
 }
