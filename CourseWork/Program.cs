@@ -185,25 +185,16 @@ namespace Lab1
             cube.State.Depth = 0;
 
             HashSet<State> closedStates = new HashSet<State>();
-            //Stack<State> openedStates = new Stack<State>();
-
-            //PriorityQueue<State, float> openedStates = new PriorityQueue<State, float>();
-
             List<KeyValue> openedStates = new List<KeyValue>();
-
 
             Statistic stat = new Statistic();
 
             var neighbors = map.GetNeighbors(cube.State.Coordinate);
 
-            //openedStates.Push(new State { Coordinate = cube.State.Coordinate, Direction = cube.State.Direction });
-            //openedStates.Enqueue(new State { Coordinate = cube.State.Coordinate, Direction = cube.State.Direction }, HeuristicFunction(cube));
             openedStates.Add(new KeyValue { Key = HeuristicFunction(cube), Value = new State { Coordinate = cube.State.Coordinate, Direction = cube.State.Direction } });
             openedStates = openedStates.OrderBy(x => x.Key).ToList();
-            //closedStates.Add(new State { coordinate = cube.state.coordinate, direction = cube.state.direction });
 
             State tmpState = new State { Coordinate = new Coordinate { x = -1, y = -1 }, Direction = Direction.Forward };
-            //State nullState = new State { coordinate = new Coordinate { x = -1, y = -1 }, direction = Direction.Forward };
 
             List<State> finishStates = new List<State>();
 
@@ -217,30 +208,23 @@ namespace Lab1
 
                 if (tmpState == finishState)
                 {
-                    //finishStates.Add(tmpState);
                     stat.IsHaveWay = true;
                     break;
                 }
 
                 if (stat.Count == 0)
                 {
-                    //tmpState = openedStates.Pop();
-                    //tmpState = openedStates.Dequeue();
                     tmpState = openedStates.First().Value;
                     openedStates.Remove(openedStates.First());
                     openedStates = openedStates.OrderBy(x => x.Key).ToList();
                     closedStates.Add(tmpState);
                 }
 
-                
-
                 foreach (var neighbor in neighbors)
                 {
                     var neighborState = new State { Coordinate = neighbor, Direction = cube.DirectionAfterMove(neighbor), ParentState = cube.State, Depth = cube.State.Depth + 1 };
                     if (cube.State.Depth <= maxDepth)
                     {
-                        //if (!openedStates.Contains(neighborState) && !closedStates.Contains(neighborState))
-                        //if (!openedStates.UnorderedItems.Select(x => x.ToString() == neighbor.ToString()).FirstOrDefault() && !closedStates.Contains(neighborState))
                         var tmp = openedStates.Where(x => (x.Key >= 0) && (x.Key <= openedStates.Max(x => x.Key)) && (x.Key != HeuristicFunction(cube)) && (x.Value.ToString() == neighborState.ToString())).FirstOrDefault();
                         if (tmp != null)
                         {
@@ -251,19 +235,13 @@ namespace Lab1
                                 continue;
                             }
                         }
-                        
-
                         if (!openedStates.Contains(new KeyValue { Key = HeuristicFunction(cube), Value = neighborState }) && !closedStates.Contains(neighborState))
                         {
-                            //openedStates.Push(neighborState);
-                            //openedStates.Enqueue(neighborState, HeuristicFunction(cube));
                             openedStates.Add(new KeyValue { Key = HeuristicFunction(cube), Value = neighborState });
                             openedStates = openedStates.OrderBy(x => x.Key).ToList();
                         }
                     }
                 }
-
-                
 
                 if (openedStates.Count == 0)
                     break;
@@ -271,9 +249,6 @@ namespace Lab1
                 if (openedStates.Count == 0 && cube.State.Depth >= maxDepth)
                     break;
 
-
-                //tmpState = openedStates.Pop();
-                //tmpState = openedStates.Dequeue();
                 tmpState = openedStates.First().Value;
                 openedStates.Remove(openedStates.First());
                 openedStates = openedStates.OrderBy(x => x.Key).ToList();
@@ -286,9 +261,7 @@ namespace Lab1
 
                 cube.State = tmpState;
 
-                //cube.Step(tmpState.coordinate);
                 neighbors = map.GetNeighbors(cube.State.Coordinate);
-                //Thread.Sleep(300);
                 stat.Count++;
             }
 
@@ -307,15 +280,8 @@ namespace Lab1
             Statistic stat = new Statistic();
 
             var neighbors = map.GetNeighbors(cube.State.Coordinate);
-
             openedStates.Push(new State { Coordinate = cube.State.Coordinate, Direction = cube.State.Direction });
-            //closedStates.Add(new State { coordinate = cube.state.coordinate, direction = cube.state.direction });
-
-
             State tmpState = new State { Coordinate = new Coordinate { x = -1, y = -1 }, Direction = Direction.Forward };
-            //State nullState = new State { coordinate = new Coordinate { x = -1, y = -1 }, direction = Direction.Forward };
-
-            List<State> finishStates = new List<State>();
 
             while (openedStates.Count >= 0)
             {
@@ -327,16 +293,9 @@ namespace Lab1
 
                 if (tmpState == finishState)
                 {
-                    //finishStates.Add(tmpState);
                     stat.IsHaveWay = true;
                     break;
                 }
-
-                //if(cube.State.Coordinate.x == 20 && cube.State.Coordinate.y == 4)
-                //{
-                //    GC.Collect();
-                //}
-
                 if (stat.Count == 0)
                 {
                     tmpState = openedStates.Pop();
@@ -354,13 +313,11 @@ namespace Lab1
                         }
                     }
                 }
-
                 if (openedStates.Count == 0)
                     break;
 
                 if (openedStates.Count == 0 && cube.State.Depth >= maxDepth)
                     break;
-
 
                 tmpState = openedStates.Pop();
                 closedStates.Add(tmpState);
@@ -370,20 +327,12 @@ namespace Lab1
                 if (stat.MaxOAndC < openedStates.Count() + 1 + closedStates.Count())
                     stat.MaxOAndC = openedStates.Count() + 1 + closedStates.Count();
 
-
-
                 cube.State = tmpState;
 
-
-                //cube.Step(tmpState.coordinate);
                 neighbors = map.GetNeighbors(cube.State.Coordinate);
-                //Thread.Sleep(300);
                 stat.Count++;
             }
-
             stat.LastO = openedStates.Count();
-
-            GC.Collect();
             return stat;
         }
 
@@ -395,7 +344,7 @@ namespace Lab1
             {
                 case Heuristic.BFS:
                     {
-                        result = cube.State.Depth;
+                        result = 0;
                     }
                     break;
                 case Heuristic.Manhattan:
@@ -444,13 +393,13 @@ namespace Lab1
             Console.WriteLine($"Current algorithm: {heuristic.ToString()}");
             //Console.WriteLine(new string(' ', Console.WindowWidth));
             Console.SetCursorPosition(0, 1);
-            if(neighbors != null)
-            {
-                foreach (Coordinate? coord in neighbors)
-                {
-                    Console.Write($"{coord.ToString()}; ");
-                }
-            }
+            //if(neighbors != null)
+            //{
+            //    foreach (Coordinate? coord in neighbors)
+            //    {
+            //        Console.Write($"{coord.ToString()}; ");
+            //    }
+            //}
 
             Console.WriteLine();
 

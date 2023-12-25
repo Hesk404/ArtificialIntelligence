@@ -17,12 +17,6 @@ namespace Lab1.Model
 
         public void Step(Coordinate coord)
         {
-            //if(coord.x == state.coordinate.x && coord.y == state.coordinate.y)
-            //    return;
-
-            //if (coord.x >= state.coordinate.x + 2 || coord.x <= state.coordinate.x - 2 || coord.y >= state.coordinate.y + 2 || coord.y <= state.coordinate.y - 2)
-            //    return;
-
             if(coord.x < State.Coordinate.x && coord.y == State.Coordinate.y)
             {
                 State.Direction = State.Direction switch
@@ -120,7 +114,5 @@ namespace Lab1.Model
 
             return State.Direction;
         }
-
-
     }
 }

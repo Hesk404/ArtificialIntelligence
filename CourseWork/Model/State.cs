@@ -47,7 +47,6 @@ namespace Lab1.Model
 
         public static bool operator !=(State state1, State state2) => (state1.Coordinate != state2.Coordinate) || (state1.Direction == state2.Direction);
 
-
         public override bool Equals(object? obj)
         {
             return this == (State)obj;
